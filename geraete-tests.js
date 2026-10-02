@@ -240,6 +240,21 @@
       }
     },
     {
+      // Ob die Seite den Akku lesen darf: für eine Warnung bei knappem Akku (Chrome und Edge auf Android ja, Safari nie, Firefox nicht mehr)
+      id: "akku", titel: "Akku", bezug: "für eine Warnung bei knappem Akku", block: "auto",
+      async lauf() {
+        if (typeof navigator.getBattery !== "function") return { art: "warn", wert: "nicht lesbar", mess: { "navigator.getBattery": "nicht vorhanden",
+          "Hinweis": "Dieser Browser gibt den Akku nicht an Webseiten heraus (Safari auf iPhone und iPad, Firefox). Eine Akku-Warnung gibt es hier nicht." } };
+        try {
+          const b = await navigator.getBattery();
+          const mess = { "Stand": Math.round(b.level * 100) + " %", "Lädt": janein(b.charging),
+            "Voll in": b.charging && isFinite(b.chargingTime) ? Math.round(b.chargingTime / 60) + " min" : "keine Angabe",
+            "Leer in": !b.charging && isFinite(b.dischargingTime) ? Math.round(b.dischargingTime / 60) + " min" : "keine Angabe" };
+          return { art: "ok", wert: Math.round(b.level * 100) + " %" + (b.charging ? ", lädt" : ""), mess };
+        } catch (e) { return { art: "warn", wert: "nicht lesbar", mess: { "Fehler": e.name + ": " + e.message } }; }
+      }
+    },
+    {
       id: "teilen", titel: "Teilen", bezug: "für das Teilen von Links", block: "auto",
       async lauf() {
         const a = typeof navigator.share === "function", b = !!navigator.clipboard?.writeText;
@@ -495,5 +510,5 @@
     }
   ];
 
-  window.GT_TESTS = { version: 19, tests };   // 9: ohne "Kompass nach Pause"; 10: Kompass still liegend kein Fehler; 11: Drehen zeichnet jede Meldung auf; 12: Gyroskop und Neigung beim Drehen; 13: Gyro-Achse aus den Daten; 14: Abweichung Kompass gegen Gyroskop; 15: Drehung um die Senkrechte, auch schräg; 16: Einmessen vor dem Drehen; 17: Striche nur beim Drehen, Wandern ohne Drehung; 18: keine Position mehr; 19: neutrale Abfragen und Kennungen (02.10.2026)
+  window.GT_TESTS = { version: 20, tests };   // 20: Akku als eigener Schritt (02.10.2026)   // 9: ohne "Kompass nach Pause"; 10: Kompass still liegend kein Fehler; 11: Drehen zeichnet jede Meldung auf; 12: Gyroskop und Neigung beim Drehen; 13: Gyro-Achse aus den Daten; 14: Abweichung Kompass gegen Gyroskop; 15: Drehung um die Senkrechte, auch schräg; 16: Einmessen vor dem Drehen; 17: Striche nur beim Drehen, Wandern ohne Drehung; 18: keine Position mehr; 19: neutrale Abfragen und Kennungen (02.10.2026)
 })();
