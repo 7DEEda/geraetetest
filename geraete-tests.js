@@ -414,7 +414,7 @@
     /* ================= neue Funktionen ================= */
     {
       id: "kamera", titel: "Kamera und Foto", bezug: "für Fotos", block: "neu",
-      kopf: "Ein Foto machen", hand: "Mach ein Foto von irgendetwas. Es geht nur darum, ob die Kamera aufgeht.", grenze: 180,
+      kopf: "Ein Foto machen", hand: "Mach ein Foto, egal wovon.", grenze: 180,
       lauf(ctx) {
         // Der Klick auf das Feld muss noch im Fingertipp passieren, darum kein async vor input.click()
         const input = document.createElement("input");

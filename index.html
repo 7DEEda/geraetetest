@@ -602,8 +602,7 @@ function zeichne() {
   if (inh.dataset.s !== schluessel) { inh.dataset.s = schluessel; inh.style.animation = "none"; void inh.offsetWidth; inh.style.animation = ""; }
   if (S.seite === "start") {
     kopf("", 0);
-    inh.innerHTML = `<div class="bild mitte">${ICON.start}</div><h2>Was kann dieses Handy?</h2>
-      <p>Geprüft wird, was eine Web-App auf diesem Handy nutzen kann.</p>${TAFEL}
+    inh.innerHTML = `<div class="bild mitte">${ICON.start}</div><h2>Was kann dieses Handy?</h2>${TAFEL}
       <p class="klein" style="margin-top:20px">Version ${SUITE.version}</p>`;
     akt.innerHTML = `<button class="btn" id="weiter" data-was="weiter">Weiter</button>`;
   } else if (S.seite === "freigaben") {
@@ -613,7 +612,7 @@ function zeichne() {
   } else if (S.seite === "auto") {
     const fertigN = SELBST.filter(z => z.st === "fertig").length;
     kopf("Automatisch", 0.3 * fertigN / SELBST.length);
-    inh.innerHTML = `<h2>Prüfung läuft</h2><p class="klein">Einen Moment, dafür ist nichts zu tun.</p>
+    inh.innerHTML = `<h2>Prüfung läuft</h2><p class="klein">Du musst nichts tun.</p>
       <ul class="liste">${SELBST.map(z => `<li><div class="zeile"><span class="ic">${z.st === "fertig" ? ZEICHEN[z.erg.art] : z.st === "laeuft" ? '<i class="dreh"></i>' : ""}</span><span class="t">${esc(z.t.titel)}</span></div></li>`).join("")}</ul>`;
     akt.innerHTML = "";
   } else if (S.seite === "hand") {
@@ -650,9 +649,9 @@ function zeichne() {
     // Karten nur für das, was man selbst einstellen kann
     const st = Z.find(z => z.t.id === "standort");
     const selbstHilfe = st && st.erg && st.erg.wert === "nur ungefähr"
-      ? `<div class="karte warn"><h3>Eine Sache kannst du einstellen</h3><p>${esc(st.erg.mess["Hinweis"])}</p></div>` : "";
+      ? `<div class="karte warn"><h3>Genauen Standort einschalten</h3><p>${esc(st.erg.mess["Hinweis"])}</p></div>` : "";
     inh.innerHTML = `<div class="bild fertig mitte">${ICON.fertig}</div><h2>Fertig, danke!</h2><div id="ende-sp"></div>${selbstHilfe}
-      ${weg ? `<p class="klein" style="margin-top:12px">${weg === 1 ? "Ein Schritt" : weg + " Schritte"} übersprungen. Kein Problem.</p>` : ""}
+      ${weg ? `<p class="klein" style="margin-top:12px">${weg === 1 ? "Ein Schritt" : weg + " Schritte"} übersprungen.</p>` : ""}
       <details><summary>Ergebnis ansehen</summary><ul class="liste">${Z.map((z, k) => ergZeile(z, k)).join("")}</ul>
         <button class="txt" data-was="neu">Neuer Lauf</button></details>`;
     speicherZeigen();
