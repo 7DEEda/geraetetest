@@ -804,6 +804,9 @@ function speichern() {
 // Schickt alles, was auf dem Gerät liegt: den laufenden Lauf und frühere, die hängen geblieben sind
 async function allesSenden() {
   const liste = offene();
+  // Gesperrter Speicher (privater Modus, Cookies blockiert): offene() findet nichts, der laufende Lauf geht
+  // trotzdem raus (Bugjagd 03.10.2026, Fund 11). Sonst stand am Ende endlos "wird gespeichert".
+  if (lauf.begonnen && !liste.some(o => o.key === lauf.key)) liste.push({ key: lauf.key, payload: payload() });
   if (!liste.length) return;
   status("info", "Sende …");
   let fehler = null;

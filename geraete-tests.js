@@ -70,8 +70,10 @@
         // Geräteart: kein Browser sagt sie direkt, wir schließen aus Kennung, Zeiger und Bildschirm
         const mobil = navigator.userAgentData?.mobile ?? /Mobi|iPhone|iPod/.test(ua);
         const grob = matchMedia("(pointer: coarse)").matches, kurz = Math.min(screen.width, screen.height);
-        const art = /iPhone|iPod/.test(ua) || mobil ? "Telefon"
-          : /iPad/.test(ua) || os === "iPadOS" || /Android/.test(ua) || (grob && kurz >= 600) ? "Tablet"
+        // iPad zuerst: mit mobiler Kennung ("iPad; ... Mobile/15E148") hielt der Test es sonst für ein Telefon
+        const art = /iPad/.test(ua) || os === "iPadOS" ? "Tablet"
+          : /iPhone|iPod/.test(ua) || mobil ? "Telefon"
+          : /Android/.test(ua) || (grob && kurz >= 600) ? "Tablet"
           : navigator.maxTouchPoints > 0 ? "Laptop mit Touch" : "Laptop oder PC";
         let akku = null;
         try { if (navigator.getBattery) { const b = await navigator.getBattery(); akku = Math.round(b.level * 100) + " %" + (b.charging ? ", lädt" : ""); } } catch { /* egal */ }
@@ -510,5 +512,5 @@
     }
   ];
 
-  window.GT_TESTS = { version: 20, tests };   // 20: Akku als eigener Schritt (02.10.2026)   // 9: ohne "Kompass nach Pause"; 10: Kompass still liegend kein Fehler; 11: Drehen zeichnet jede Meldung auf; 12: Gyroskop und Neigung beim Drehen; 13: Gyro-Achse aus den Daten; 14: Abweichung Kompass gegen Gyroskop; 15: Drehung um die Senkrechte, auch schräg; 16: Einmessen vor dem Drehen; 17: Striche nur beim Drehen, Wandern ohne Drehung; 18: keine Position mehr; 19: neutrale Abfragen und Kennungen (02.10.2026)
+  window.GT_TESTS = { version: 21, tests };   // 21: iPad mit mobiler Kennung ist ein Tablet (04.10.2026)   // 20: Akku als eigener Schritt (02.10.2026)   // 9: ohne "Kompass nach Pause"; 10: Kompass still liegend kein Fehler; 11: Drehen zeichnet jede Meldung auf; 12: Gyroskop und Neigung beim Drehen; 13: Gyro-Achse aus den Daten; 14: Abweichung Kompass gegen Gyroskop; 15: Drehung um die Senkrechte, auch schräg; 16: Einmessen vor dem Drehen; 17: Striche nur beim Drehen, Wandern ohne Drehung; 18: keine Position mehr; 19: neutrale Abfragen und Kennungen (02.10.2026)
 })();
