@@ -113,6 +113,11 @@ main{display:flex;flex-direction:column;min-height:100vh;min-height:100dvh;paddi
 /* Start und Ende: Zeichen mittig und größer, so erkennt man die beiden Bildschirme auf einen Blick */
 .bild.mitte{width:120px;height:120px;border-radius:30px;margin:12px auto 24px}
 .bild.mitte svg{width:66px;height:66px}
+/* Startzeichen ist ein Knopf: ein Tipp vibriert (Android) oder gibt ein haptisches Klicken (iPhone) */
+.bild.summ{cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .16s cubic-bezier(.32,.72,.4,1)}
+.bild.summ:active{transform:scale(.94)}
+.bild.summ.wackelt svg{animation:wackel .3s cubic-bezier(.32,.72,.4,1)}
+@keyframes wackel{0%,100%{transform:none}25%{transform:translateX(-3px) rotate(-4deg)}75%{transform:translateX(3px) rotate(4deg)}}
 .inhalt h2{font-size:32px;margin-bottom:10px}
 .inhalt p{margin:0 0 10px;font-size:19px}
 .inhalt p.klein{font-size:15px;color:var(--muted)}
@@ -602,7 +607,7 @@ function zeichne() {
   if (inh.dataset.s !== schluessel) { inh.dataset.s = schluessel; inh.style.animation = "none"; void inh.offsetWidth; inh.style.animation = ""; }
   if (S.seite === "start") {
     kopf("", 0);
-    inh.innerHTML = `<div class="bild mitte">${ICON.start}</div><h2>Was kann dieses Handy?</h2>
+    inh.innerHTML = `<div class="bild mitte summ" role="button" tabindex="0" aria-label="Vibrieren" data-was="summ">${ICON.start}</div><h2>Was kann dieses Handy?</h2>
       <p>Geprüft wird, was eine Web-App auf diesem Handy nutzen kann.</p>${TAFEL}
       <p class="klein" style="margin-top:20px">Version ${SUITE.version}</p>`;
     akt.innerHTML = `<button class="btn" id="weiter" data-was="weiter">Weiter</button>`;
@@ -666,9 +671,22 @@ function ergZeile(z, k) {
   return `<li><button class="zeile" data-was="auf" data-k="${k}" aria-expanded="${z.auf}"><span class="ic">${ZEICHEN[e.art] || ZEICHEN.skip}</span><span class="t">${esc(z.t.titel)}</span><span class="w">${esc(e.wert)}</span></button>${mehr}</li>`;
 }
 
+// Android: navigator.vibrate. iPhone kennt das nicht; dort gibt das Umlegen eines
+// Schalters (<input type="checkbox" switch>, ab iOS 18) ein kurzes haptisches Klicken.
+// Beides nur aus dem Fingertipp heraus.
+function summen(b) {
+  b.classList.remove("wackelt"); void b.offsetWidth; b.classList.add("wackelt");
+  if (typeof navigator.vibrate === "function") { try { navigator.vibrate([60, 40, 60]); } catch (e) {} return; }
+  const l = document.createElement("label"), i = document.createElement("input");
+  i.type = "checkbox"; i.setAttribute("switch", ""); l.appendChild(i);
+  l.style.display = "none"; document.head.appendChild(l);
+  l.click(); l.remove();
+}
+
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-was]"); if (!b) return;
   const was = b.dataset.was, z = HAND[S.i];
+  if (was === "summ") return summen(b);
   if (was === "weiter") { S.seite = "freigaben"; return zeichne(); }
   if (was === "start") return starten();
   if (was === "los") return fuehre(z);              // ohne await davor: Kamera und Mitteilungen brauchen den Fingertipp
