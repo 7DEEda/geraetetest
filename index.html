@@ -676,11 +676,13 @@ function ergZeile(z, k) {
 // Beides nur aus dem Fingertipp heraus.
 function summen(b) {
   b.classList.remove("wackelt"); void b.offsetWidth; b.classList.add("wackelt");
-  if (typeof navigator.vibrate === "function") { try { navigator.vibrate([60, 40, 60]); } catch (e) {} return; }
+  // Stärke kann eine Webseite nicht wählen, nur die Dauer: also länger und öfter
+  if (typeof navigator.vibrate === "function") { try { navigator.vibrate([400, 120, 400, 120, 400]); } catch (e) {} return; }
   const l = document.createElement("label"), i = document.createElement("input");
   i.type = "checkbox"; i.setAttribute("switch", ""); l.appendChild(i);
   l.style.display = "none"; document.head.appendChild(l);
-  l.click(); l.remove();
+  // drei Klicks hintereinander, solange der Tipp noch gilt
+  [0, 110, 220].forEach((t, n) => setTimeout(() => { l.click(); if (n === 2) l.remove(); }, t));
 }
 
 document.addEventListener("click", e => {
